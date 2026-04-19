@@ -1,0 +1,6 @@
+{
+  "name": "StadiumPulse",
+  "description": "An interactive attendee experience platform for large-scale sporting venues, featuring real-time crowd insights, smart queue management, and an AI-powered venue concierge.",
+  "requestFramePermissions": ["geolocation", "camera"],
+  "majorCapabilities": []
+}
