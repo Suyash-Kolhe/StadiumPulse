@@ -16,6 +16,7 @@ import IntroPage from './components/IntroPage';
 import UserAuth from './components/UserAuth';
 import Parking from './components/Parking';
 import SettingsModal from './components/SettingsModal';
+import ErrorBoundary from './components/ErrorBoundary';
 import { motion, AnimatePresence } from 'motion/react';
 import { stadiums, Stadium } from './data/stadiums';
 
@@ -59,6 +60,13 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen bg-[#050505] font-sans selection:bg-blue-500/30" role="application" aria-label="ArenaPulse Platform">
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-6 focus:py-3 focus:bg-accent focus:text-black focus:font-black focus:rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-black"
+      >
+        Skip to main content
+      </a>
+      
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
@@ -86,6 +94,19 @@ export default function App() {
       
       <main id="main-content" className="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto h-screen no-scrollbar" role="main" aria-label={`${activeTab} view`}>
         <div className="max-w-7xl mx-auto">
+          {/* Breadcrumb / Status Bar */}
+          <nav className="mb-8 flex items-center gap-4 text-[10px] font-black uppercase tracking-[3px]" aria-label="Breadcrumb">
+            <span className="text-text-muted">Command</span>
+            <div className="w-1 h-1 bg-white/20 rounded-full" />
+            <span className="text-accent">{activeTab}</span>
+            {activeTab !== 'dashboard' && (
+              <>
+                <div className="w-1 h-1 bg-white/20 rounded-full" />
+                <span className="text-white/40">Active Session</span>
+              </>
+            )}
+          </nav>
+
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -94,7 +115,9 @@ export default function App() {
               exit={{ opacity: 0, x: -10 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              {renderContent()}
+              <ErrorBoundary>
+                {renderContent()}
+              </ErrorBoundary>
             </motion.div>
           </AnimatePresence>
         </div>

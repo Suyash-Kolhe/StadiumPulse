@@ -27,6 +27,7 @@ import {
   Line,
   ReferenceLine
 } from 'recharts';
+import VenueIntelligence from './VenueIntelligence';
 import { stadiums, Stadium } from '../data/stadiums';
 import { cn } from '../lib/utils';
 
@@ -128,6 +129,8 @@ export default function Dashboard({ selectedStadium, setSelectedStadium, setActi
               key={stadium.id}
               whileHover={{ y: -5 }}
               onClick={() => setSelectedStadium(stadium)}
+              aria-label={`Select ${stadium.name} in ${stadium.city}`}
+              aria-pressed={selectedStadium.id === stadium.id}
               className={cn(
                 "p-6 rounded-[24px] border transition-all text-left group relative overflow-hidden h-full",
                 selectedStadium.id === stadium.id 
@@ -593,6 +596,8 @@ export default function Dashboard({ selectedStadium, setSelectedStadium, setActi
 
         {/* Alerts & Roadmap */}
         <div className="space-y-8 flex flex-col">
+          <VenueIntelligence stadium={selectedStadium} />
+
           <div className="bg-surface border border-white/5 p-8 rounded-[24px] flex-1">
             <p className="section-label">Active Alerts</p>
             <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 no-scrollbar">

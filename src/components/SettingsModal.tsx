@@ -17,6 +17,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { sanitizeInput } from '../lib/security';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -32,11 +33,49 @@ export default function SettingsModal({ isOpen, onClose, user, onLogout }: Setti
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
+  const modalRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      // Focus trap and escape listener
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') onClose();
+        if (e.key === 'Tab') {
+          const focusableElements = modalRef.current?.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (focusableElements) {
+            const firstElement = focusableElements[0] as HTMLElement;
+            const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+            if (e.shiftKey && document.activeElement === firstElement) {
+              e.preventDefault();
+              lastElement.focus();
+            } else if (!e.shiftKey && document.activeElement === lastElement) {
+              e.preventDefault();
+              firstElement.focus();
+            }
+          }
+        }
+      };
+
+      document.addEventListener('keydown', handleKeyDown);
+      modalRef.current?.querySelector('button')?.focus();
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+        document.body.style.overflow = 'auto';
+      };
+    }
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleFeedbackSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (feedback.length < 10) {
+    const sanitizedFeedback = sanitizeInput(feedback, 500);
+    if (sanitizedFeedback.length < 10) {
       setSubmitStatus('error');
       return;
     }
@@ -73,10 +112,14 @@ export default function SettingsModal({ isOpen, onClose, user, onLogout }: Setti
       />
       
       <motion.div
+        ref={modalRef}
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
         className="relative w-full max-w-[900px] h-[600px] bg-surface border border-white/10 rounded-[40px] shadow-2xl overflow-hidden flex"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-title"
       >
         {/* Sidebar */}
         <div className="w-1/3 border-r border-white/5 bg-black/40 p-8 flex flex-col justify-between">
@@ -85,7 +128,7 @@ export default function SettingsModal({ isOpen, onClose, user, onLogout }: Setti
               <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
                 <Shield className="w-5 h-5 text-black" />
               </div>
-              <span className="text-sm font-black text-white tracking-[2px] uppercase">Nexus Settings</span>
+              <span id="settings-title" className="text-sm font-black text-white tracking-[2px] uppercase">Nexus Settings</span>
             </div>
 
             <nav className="space-y-2">
@@ -128,7 +171,7 @@ export default function SettingsModal({ isOpen, onClose, user, onLogout }: Setti
             <X className="w-6 h-6" />
           </button>
 
-          <div className="flex-1 p-12 overflow-y-auto no-scrollbar">
+          <main className="flex-1 p-12 overflow-y-auto no-scrollbar" role="tabpanel">
             <AnimatePresence mode="wait">
               {activeTab === 'profile' && (
                 <motion.div
@@ -267,7 +310,7 @@ export default function SettingsModal({ isOpen, onClose, user, onLogout }: Setti
                 </div>
               )}
             </AnimatePresence>
-          </div>
+          </main>
         </div>
       </motion.div>
     </div>

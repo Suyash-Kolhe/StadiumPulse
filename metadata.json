@@ -1,6 +1,6 @@
 {
   "name": "StadiumPulse",
-  "description": "An interactive attendee experience platform for large-scale sporting venues, featuring real-time crowd insights, smart queue management, and an AI-powered venue concierge.",
+  "description": "A high-performance stadium intelligence platform featuring Gemini-powered venue analytics, tactical crowd management, and mission-critical accessibility for large-scale venues.",
   "requestFramePermissions": ["geolocation", "camera"],
   "majorCapabilities": []
 }
