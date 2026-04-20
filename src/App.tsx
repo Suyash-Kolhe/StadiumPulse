@@ -8,7 +8,6 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import LiveMap from './components/LiveMap';
 import Services from './components/Services';
-import AIConcierge from './components/AIConcierge';
 import EmergencySOS from './components/EmergencySOS';
 import FastTrack from './components/FastTrack';
 import BuddyTracker from './components/BuddyTracker';
@@ -43,8 +42,6 @@ export default function App() {
         return <FastTrack selectedStadium={selectedStadium} />;
       case 'buddy':
         return <BuddyTracker selectedStadium={selectedStadium} />;
-      case 'concierge':
-        return <AIConcierge selectedStadium={selectedStadium} />;
       case 'sos':
         return <EmergencySOS selectedStadium={selectedStadium} />;
       default:
@@ -61,7 +58,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#050505] font-sans selection:bg-blue-500/30">
+    <div className="flex min-h-screen bg-[#050505] font-sans selection:bg-blue-500/30" role="application" aria-label="ArenaPulse Platform">
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
@@ -87,7 +84,7 @@ export default function App() {
         )}
       </AnimatePresence>
       
-      <main className="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto h-screen custom-scrollbar">
+      <main id="main-content" className="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto h-screen no-scrollbar" role="main" aria-label={`${activeTab} view`}>
         <div className="max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div

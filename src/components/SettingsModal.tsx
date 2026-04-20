@@ -12,7 +12,9 @@ import {
   X,
   Star,
   Send,
-  UserCircle
+  UserCircle,
+  AlertCircle,
+  CheckCircle2
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -28,17 +30,28 @@ export default function SettingsModal({ isOpen, onClose, user, onLogout }: Setti
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   if (!isOpen) return null;
 
   const handleFeedbackSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (feedback.length < 10) {
+      setSubmitStatus('error');
+      return;
+    }
+    
     setIsSubmitting(true);
+    setSubmitStatus('idle');
+    
     setTimeout(() => {
       setIsSubmitting(false);
+      setSubmitStatus('success');
       setFeedback('');
       setRating(0);
-      alert('Thank you for your feedback!');
+      
+      // Auto reset success message
+      setTimeout(() => setSubmitStatus('idle'), 3000);
     }, 1500);
   };
 
@@ -115,7 +128,7 @@ export default function SettingsModal({ isOpen, onClose, user, onLogout }: Setti
             <X className="w-6 h-6" />
           </button>
 
-          <div className="flex-1 p-12 overflow-y-auto custom-scrollbar">
+          <div className="flex-1 p-12 overflow-y-auto no-scrollbar">
             <AnimatePresence mode="wait">
               {activeTab === 'profile' && (
                 <motion.div
@@ -194,14 +207,43 @@ export default function SettingsModal({ isOpen, onClose, user, onLogout }: Setti
                     </div>
 
                     <div className="space-y-4">
-                      <label className="text-[10px] font-black text-text-muted uppercase tracking-[4px]">Detailed Analysis</label>
+                      <div className="flex justify-between items-center">
+                        <label className="text-[10px] font-black text-text-muted uppercase tracking-[4px]">Detailed Analysis</label>
+                        <span className={cn("text-[8px] font-bold uppercase", feedback.length > 500 ? "text-danger" : "text-text-muted")}>
+                          {feedback.length}/500
+                        </span>
+                      </div>
                       <textarea
                         value={feedback}
-                        onChange={(e) => setFeedback(e.target.value)}
+                        onChange={(e) => setFeedback(e.target.value.slice(0, 500))}
                         placeholder="What can we improve in your next visit?"
                         rows={4}
+                        required
+                        aria-invalid={submitStatus === 'error'}
                         className="w-full bg-black/40 border border-white/10 rounded-2xl p-6 text-sm font-bold text-white placeholder:text-white/10 focus:outline-none focus:border-accent/50 transition-all resize-none"
                       />
+                      <AnimatePresence>
+                        {submitStatus === 'error' && (
+                          <motion.p 
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            className="text-[10px] font-bold text-danger uppercase tracking-widest flex items-center gap-2"
+                          >
+                             <AlertCircle className="w-4 h-4" /> Please provide at least 10 characters.
+                          </motion.p>
+                        )}
+                        {submitStatus === 'success' && (
+                          <motion.p 
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            className="text-[10px] font-bold text-accent uppercase tracking-widest flex items-center gap-2"
+                          >
+                             <CheckCircle2 className="w-4 h-4" /> Transmission successful. Thank you.
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
                     </div>
 
                     <button

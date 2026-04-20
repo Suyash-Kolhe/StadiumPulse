@@ -387,14 +387,16 @@ export default function Dashboard({ selectedStadium, setSelectedStadium, setActi
                     >
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-3">
-                          <label className="text-[10px] font-black text-text-muted uppercase tracking-[4px] px-2">Sector</label>
+                          <label htmlFor="sector-select" className="text-[10px] font-black text-text-muted uppercase tracking-[4px] px-2">Sector</label>
                           <div className="relative">
                             <select 
+                              id="sector-select"
                               value={selectedSector}
                               onChange={(e) => {
                                 setSelectedSector(e.target.value);
                                 setSelectedSeats([]);
                               }}
+                              aria-label="Select stadium sector"
                               className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-xs font-bold tracking-widest text-white appearance-none focus:outline-none focus:border-accent/50"
                             >
                               {selectedStadium.sectors.map(sector => (
@@ -406,14 +408,16 @@ export default function Dashboard({ selectedStadium, setSelectedStadium, setActi
                         </div>
 
                         <div className="space-y-3">
-                          <label className="text-[10px] font-black text-text-muted uppercase tracking-[4px] px-2">Quantity</label>
+                          <label htmlFor="quantity-select" className="text-[10px] font-black text-text-muted uppercase tracking-[4px] px-2">Quantity</label>
                           <div className="relative">
                             <select 
+                              id="quantity-select"
                               value={ticketCount}
                               onChange={(e) => {
                                 setTicketCount(Number(e.target.value));
                                 setSelectedSeats([]);
                               }}
+                              aria-label="Number of tickets"
                               className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-xs font-bold tracking-widest text-white appearance-none focus:outline-none focus:border-accent/50"
                             >
                               {[1, 2, 3, 4, 5, 6].map(num => (
@@ -430,7 +434,7 @@ export default function Dashboard({ selectedStadium, setSelectedStadium, setActi
                            <label className="text-[10px] font-black text-text-muted uppercase tracking-[4px]">Choose Seats ({selectedSeats.length}/{ticketCount})</label>
                            <span className="text-[8px] font-bold text-accent uppercase tracking-widest">Sector {selectedSector.slice(0, 1)} Grid</span>
                         </div>
-                        <div className="bg-black/20 p-4 rounded-2xl border border-white/5">
+                        <div className="bg-black/20 p-4 rounded-2xl border border-white/5" role="group" aria-label="Seat Selection Grid">
                           <div className="grid grid-cols-8 gap-2">
                             {seatAvailability.map((seat) => (
                               <button
@@ -591,7 +595,7 @@ export default function Dashboard({ selectedStadium, setSelectedStadium, setActi
         <div className="space-y-8 flex flex-col">
           <div className="bg-surface border border-white/5 p-8 rounded-[24px] flex-1">
             <p className="section-label">Active Alerts</p>
-            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 no-scrollbar">
               {[
                 { type: 'Warning', msg: 'High congestion at Gate B. Use Gate C for faster exit.', time: '2m ago', color: 'text-danger', bg: 'bg-danger/10' },
                 { type: 'Info', msg: 'Half-time show starting in 10 minutes.', time: '5m ago', color: 'text-info', bg: 'bg-info/10' },
